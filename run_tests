@@ -1,0 +1,13 @@
+#!/bin/bash
+
+make clean
+make
+
+
+set -o pipefail
+
+export LD_LIBRARY_PATH=/home/ubuntu/739-wisckey:$LD_LIBRARY_PATH
+./seq 2000 900 | tail -l
+unset LD_LIBRARY_PATH
+echo "Return value:"
+echo $?
