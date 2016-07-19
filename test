@@ -1,0 +1,4 @@
+#!/bin/bash
+
+./run_tests 30 30
+./run_tests 100 100

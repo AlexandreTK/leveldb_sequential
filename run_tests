@@ -1,13 +1,19 @@
 #!/bin/bash
 
+if [ "$#" -ne 2 ]; then echo "PARAMS: Num of writes, num of reads\n"; exit 1; fi
+
+if [ $1 -lt $2 ]; then echo "PARAMS: Num of writes should be greater or equal to num of reads\n"; exit 1; fi
+
 make clean
 make
 
-
-set -o pipefail
+#set -o pipefail
+#./a.out| tail -l
+#echo $?
 
 export LD_LIBRARY_PATH=/home/ubuntu/739-wisckey:$LD_LIBRARY_PATH
-./seq 2000 900 | tail -l
+./seq $1 $2
+if [[ $? -ne 0 ]]; then echo "********TEST FAILED********"; else echo "********TEST PASSED********"; fi
 unset LD_LIBRARY_PATH
-echo "Return value:"
-echo $?
+
+

@@ -5,8 +5,8 @@
 
 #include "leveldb/db.h"
 
-#define NUM 2000
-#define VAL_SIZE 25  // Aprox value (+10 up to -20(if VAL_SIZE=0))
+#define VAL_SIZE 25  // Aprox value (+10 up to -20(-20 if VAL_SIZE=0))
+                     // Maybe change this later
 
 using namespace std;
 
@@ -40,8 +40,8 @@ int main(int argc, char** argv)
     
     // Add values to the database
     leveldb::WriteOptions writeOptions;
-    string keys[NUM];
-    string values[NUM];
+    string keys[NumWrite];
+    string values[NumWrite];
 
     char input[VAL_SIZE];
     input[0]='\0';
@@ -52,7 +52,7 @@ int main(int argc, char** argv)
     }
 
     char buffer[VAL_SIZE+32]; // Max Key/Value size
-    for (unsigned int i = 0; i < NUM; ++i)
+    for (unsigned int i = 0; i < NumWrite; ++i)
     {
         ostringstream keyStream;
 	snprintf(buffer, sizeof(buffer), "%s%d", "Key", i);
@@ -68,7 +68,7 @@ int main(int argc, char** argv)
     }
 
     string aux;
-    int n=NUM;
+    int n=NumWrite;
     for(int i=0; i<n-1; i++) { 
         for(int j = i+1; j<n; j++) {
             if(keys[i].compare(keys[j])>0) 
@@ -91,26 +91,29 @@ int main(int argc, char** argv)
     int i=0;
     for (it->SeekToFirst(); it->Valid(); it->Next())
     {
-        cout << it->key().ToString() << " : " << it->value().ToString() << endl;
+        if(i >= NumRead)
+            break;
+//        cout << it->key().ToString() << " : " << it->value().ToString() << endl;
 	//snprintf(buffer, sizeof(buffer), "%s%d", "Key", i);
-//	if(it->key().ToString() != keys[i]) {
+	if(it->key().ToString() != keys[i]) {
 //	    cout << "********FAIL**********" << endl;
-//            return 1;
-//        }
+            return 1;
+        }
 
         //snprintf(buffer, sizeof(buffer), "%s%d", "Test data value: ", i);
-//        if(it->value().ToString() != values[i]) {
+        if(it->value().ToString() != values[i]) {
 //            cout << "********FAIL**********" << endl;
-//            return 1;
-//        }
+            return 1;
+        }
 
-//	i++;
+	i++;
     }
     
     if (false == it->status().ok())
     {
         cerr << "An error was found during the scan" << endl;
         cerr << it->status().ToString() << endl;
+        return 1;
     }
     
     delete it;
@@ -118,7 +121,7 @@ int main(int argc, char** argv)
     // Close the database
     delete db;
 
-    cout << "********PASS**********" << endl;
+//    cout << "********PASS**********" << endl;
     return 0;
 }
 

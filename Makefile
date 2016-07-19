@@ -5,4 +5,4 @@ seq: seq.cpp
 
 clean:
 	rm -f seq
-
+	rm -rf ./*/
